@@ -1,5 +1,5 @@
 import Component from "@glimmer/component";
-import { i18n } from "discourse-i18n";
+import i18n from "discourse-common/helpers/i18n";
 
 export default class PluginCleaner extends Component {
   <template>

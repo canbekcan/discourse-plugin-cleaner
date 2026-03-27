@@ -16,7 +16,7 @@ module PluginCleaner
     private
 
     def ensure_plugin_active
-      raise Discourse::NotFound unless SiteSetting.plugin_cleaner_enabled
+      raise Discourse::NotFound unless SiteSetting.discourse_plugin_cleaner_enabled
     end
   end
 end
