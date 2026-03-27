@@ -3,6 +3,7 @@
 # version: 0.2
 # authors: canbekcan
 
+enabled_site_setting :plugin_cleaner_enabled
 
 require_relative "lib/plugin_cleaner/scanner"
 require_relative "lib/plugin_cleaner/report"

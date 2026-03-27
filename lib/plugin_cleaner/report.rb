@@ -7,7 +7,7 @@ module PluginCleaner
       {
         # BUG FIX 3: Time.now returns a Ruby Time object which is not JSON-serializable
         # in a consistent, readable format. Use ISO 8601 instead.
-        timestamp: Time.now.utc.iso8601,
+        timestamp: Time.zone.now.iso8601,
 
         summary: {
           total_custom_fields: custom_fields.length,
