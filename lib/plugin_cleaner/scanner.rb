@@ -28,7 +28,7 @@ module PluginCleaner
       # a [key, value] pair only if it's a two-element array — which it isn't here.
       # Correct approach: use the hash form via SiteSetting.all_settings(defaults: true)
       # which returns a Hash, then filter on the key.
-      SiteSetting.all_settings(defaults: true).select do |setting|
+      SiteSetting.all_settings.select do |setting|
         name = setting[:setting].to_s
         name.include?("plugin") || name.include?("custom")
       end
