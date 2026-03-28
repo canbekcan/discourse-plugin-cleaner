@@ -1,0 +1,8 @@
+en:
+  admin_js:
+    admin:
+      site_settings:
+        categories:
+          plugin_cleaner: "Plugin Cleaner"
+  plugin_cleaner:
+    title: "Plugin Cleaner"
