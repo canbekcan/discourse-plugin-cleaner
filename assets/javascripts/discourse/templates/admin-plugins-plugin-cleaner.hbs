@@ -1,0 +1,76 @@
+<div class="plugin-cleaner-admin">
+  <h2>Plugin Cleaner</h2>
+  <p>Scans your database for orphan custom fields and settings left behind by removed or unused plugins.</p>
+
+  <div class="plugin-cleaner-actions">
+    <DButton
+      @action={{this.runScan}}
+      @disabled={{this.isScanning}}
+      @label={{if this.isScanning "plugin_cleaner.scanning" "plugin_cleaner.run_scan"}}
+      @icon={{if this.isScanning "spinner" "search"}}
+      class="btn-primary"
+    />
+  </div>
+
+  {{#if this.errorMessage}}
+    <div class="alert alert-error">
+      {{this.errorMessage}}
+    </div>
+  {{/if}}
+
+  {{#if this.scanResult}}
+    <div class="plugin-cleaner-results">
+      <h3>Scan Results
+        <span class="scan-timestamp">{{this.scanResult.timestamp}}</span>
+      </h3>
+
+      <div class="plugin-cleaner-summary">
+        <div class="stat-box">
+          <span class="stat-number">{{this.scanResult.summary.total_custom_fields}}</span>
+          <span class="stat-label">Total Custom Fields</span>
+        </div>
+        <div class="stat-box {{if this.scanResult.summary.suspicious_fields_count "has-issues"}}">
+          <span class="stat-number">{{this.scanResult.summary.suspicious_fields_count}}</span>
+          <span class="stat-label">Suspicious Fields</span>
+        </div>
+      </div>
+
+      {{#if this.scanResult.recommendation.length}}
+        <div class="plugin-cleaner-recommendations">
+          <h4>Recommendations</h4>
+          <ul>
+            {{#each this.scanResult.recommendation as |rec|}}
+              <li class="recommendation-item">{{rec}}</li>
+            {{/each}}
+          </ul>
+        </div>
+      {{else}}
+        <div class="alert alert-success">
+          No orphan data detected. Your database looks clean!
+        </div>
+      {{/if}}
+
+      {{#if this.scanResult.summary.suspicious_fields}}
+        <div class="plugin-cleaner-fields">
+          <h4>Suspicious Custom Fields (fewer than 5 records)</h4>
+          <table class="d-table">
+            <thead>
+              <tr>
+                <th>Field Name</th>
+                <th>Record Count</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{#each this.scanResult.summary.suspicious_fields as |field|}}
+                <tr>
+                  <td><code>{{field.field}}</code></td>
+                  <td>{{field.count}}</td>
+                </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        </div>
+      {{/if}}
+    </div>
+  {{/if}}
+</div>

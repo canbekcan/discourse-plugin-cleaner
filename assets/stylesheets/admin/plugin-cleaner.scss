@@ -1,0 +1,94 @@
+.plugin-cleaner-admin {
+  max-width: 900px;
+  padding: 1.5em;
+
+  h2 {
+    margin-bottom: 0.25em;
+  }
+
+  p {
+    color: var(--primary-medium);
+    margin-bottom: 1.5em;
+  }
+}
+
+.plugin-cleaner-actions {
+  margin-bottom: 1.5em;
+}
+
+.plugin-cleaner-summary {
+  display: flex;
+  gap: 1em;
+  margin: 1.5em 0;
+
+  .stat-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1em 2em;
+    background: var(--primary-very-low);
+    border-radius: 6px;
+    min-width: 140px;
+
+    &.has-issues {
+      background: var(--danger-low);
+      .stat-number { color: var(--danger); }
+    }
+
+    .stat-number {
+      font-size: 2em;
+      font-weight: bold;
+      color: var(--primary);
+    }
+
+    .stat-label {
+      font-size: 0.85em;
+      color: var(--primary-medium);
+      margin-top: 0.25em;
+    }
+  }
+}
+
+.plugin-cleaner-results {
+  h3 {
+    display: flex;
+    align-items: center;
+    gap: 1em;
+
+    .scan-timestamp {
+      font-size: 0.75em;
+      font-weight: normal;
+      color: var(--primary-medium);
+    }
+  }
+}
+
+.plugin-cleaner-recommendations {
+  margin: 1em 0;
+
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .recommendation-item {
+    padding: 0.5em 0.75em;
+    margin-bottom: 0.5em;
+    background: var(--highlight-low);
+    border-left: 3px solid var(--tertiary);
+    border-radius: 0 4px 4px 0;
+    font-family: monospace;
+    font-size: 0.9em;
+  }
+}
+
+.plugin-cleaner-fields {
+  margin-top: 1.5em;
+
+  code {
+    background: var(--primary-very-low);
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+    font-size: 0.9em;
+  }
+}
