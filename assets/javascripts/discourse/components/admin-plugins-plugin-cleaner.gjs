@@ -7,33 +7,26 @@ import { i18n } from "discourse-i18n";
 import DButton from "discourse/components/d-button";
 
 // ── Risk badge ────────────────────────────────────────────────────────────────
-function RiskBadge({ risk }) {
-  return (
-    <span class={`pc-badge pc-badge--${risk}`}>
-      {i18n(`plugin_cleaner.risk.${risk}`)}
-    </span>
-  );
-}
+const RiskBadge = <template>
+  <span class="pc-badge pc-badge--{{@risk}}">
+    {{i18n (concat "plugin_cleaner.risk." @risk)}}
+  </span>
+</template>;
 
 // ── Status badge ──────────────────────────────────────────────────────────────
-function StatusBadge({ orphaned }) {
-  const level = orphaned ? "medium" : "none";
-  const label = orphaned
-    ? i18n("plugin_cleaner.table.orphaned")
-    : i18n("plugin_cleaner.table.active");
-  return <span class={`pc-badge pc-badge--${level}`}>{label}</span>;
-}
+const StatusBadge = <template>
+  <span class="pc-badge pc-badge--{{if @orphaned "medium" "none"}}">
+    {{if @orphaned (i18n "plugin_cleaner.table.orphaned") (i18n "plugin_cleaner.table.active")}}
+  </span>
+</template>;
 
 // ── Stat box ──────────────────────────────────────────────────────────────────
-function StatBox({ value, label }) {
-  const warn = value > 0;
-  return (
-    <div class={`pc-stat ${warn ? "pc-stat--warn" : ""}`}>
-      <span class="pc-stat__num">{value}</span>
-      <span class="pc-stat__lbl">{label}</span>
-    </div>
-  );
-}
+const StatBox = <template>
+  <div class="pc-stat {{if @value "pc-stat--warn"}}">
+    <span class="pc-stat__num">{{@value}}</span>
+    <span class="pc-stat__lbl">{{@label}}</span>
+  </div>
+</template>;
 
 // ── Main component ────────────────────────────────────────────────────────────
 export default class AdminPluginsPluginCleaner extends Component {
