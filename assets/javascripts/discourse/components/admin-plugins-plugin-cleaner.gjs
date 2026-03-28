@@ -7,13 +7,13 @@ import { i18n } from "discourse-i18n";
 import DButton from "discourse/components/d-button";
 
 // ── Risk badge ────────────────────────────────────────────────────────────────
-#function RiskBadge({ risk }) {
-#  return (
-#    <span class={`pc-badge pc-badge--${risk}`}>
-#      {i18n(`plugin_cleaner.risk.${risk}`)}
-#    </span>
-#  );
-#}
+function RiskBadge({ risk }) {
+  return (
+    <span class={`pc-badge pc-badge--${risk}`}>
+      {i18n(`plugin_cleaner.risk.${risk}`)}
+    </span>
+  );
+}
 
 // ── Status badge ──────────────────────────────────────────────────────────────
 function StatusBadge({ orphaned }) {
