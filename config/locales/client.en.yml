@@ -1,6 +1,0 @@
-en:
-  plugin_cleaner:
-    run_scan: "Run Scan"
-    scanning: "Scanning..."
-    title: "Plugin Cleaner"
-    description: "Scan for orphan plugin data in the database"

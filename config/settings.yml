@@ -1,4 +1,0 @@
-plugins:
-  plugin_cleaner_enabled:
-    default: true
-    client: false
