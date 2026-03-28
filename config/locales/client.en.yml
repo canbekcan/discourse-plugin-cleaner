@@ -1,0 +1,89 @@
+en:
+  plugin_cleaner:
+    title: "Plugin Cleaner"
+    description: "Scan and clean orphaned plugin data from the database"
+
+    nav:
+      scan: "Scan"
+      versions: "Plugin Versions"
+
+    actions:
+      run_scan: "Run Deep Scan"
+      scanning: "Scanning..."
+      delete_selected: "Delete Selected"
+      deleting: "Deleting..."
+      select_all: "Select All"
+      deselect_all: "Deselect All"
+
+    status:
+      clean: "No issues detected — your database looks clean!"
+      issues_found: "{{count}} issue(s) found"
+      scanned_at: "Scanned at {{time}}"
+
+    summary:
+      orphaned_custom_fields: "Orphaned Custom Fields"
+      orphaned_plugin_settings: "Orphaned Settings"
+      inactive_themes: "Inactive Themes"
+      disabled_badges: "Disabled Badges"
+      stale_api_keys: "Stale API Keys"
+      failing_webhooks: "Failing Webhooks"
+      empty_tag_groups: "Empty Tag Groups"
+      empty_user_fields: "Empty User Fields"
+      orphaned_uploads: "Orphaned Uploads"
+      total_issues: "Total Issues"
+
+    sections:
+      custom_fields: "Custom Fields"
+      plugin_settings: "Plugin Settings"
+      themes: "Themes"
+      badges: "Badges"
+      api_keys: "API Keys"
+      webhooks: "Webhooks"
+      tag_groups: "Tag Groups"
+      user_fields: "User Profile Fields"
+      uploads: "Uploads"
+      watched_words: "Watched Words"
+      oauth_providers: "OAuth Providers"
+
+    table:
+      field: "Field"
+      model: "Model"
+      records: "Records"
+      risk: "Risk"
+      setting: "Setting"
+      plugin: "Plugin"
+      value: "Value"
+      status: "Status"
+      name: "Name"
+      last_used: "Last Used"
+      user: "User"
+      url: "URL"
+      action: "Select"
+      never: "Never"
+      active: "Active"
+      orphaned: "Orphaned"
+
+    risk:
+      critical: "Critical"
+      high: "High"
+      medium: "Medium"
+      low: "Low"
+      none: "OK"
+
+    versions:
+      title: "Plugin Version History"
+      plugin: "Plugin"
+      version: "Version"
+      status: "Status"
+      recorded_at: "Recorded At"
+      notes: "Notes"
+      status_active: "Active"
+      status_removed: "Removed"
+      loading: "Loading version history..."
+
+    confirm_delete: "Are you sure you want to delete the selected {{count}} item(s)? This cannot be undone."
+
+    errors:
+      delete_failed: "Delete failed: {{error}}"
+      scan_failed: "Scan failed. Check server logs for details."
+      nothing_selected: "Please select at least one item to delete."

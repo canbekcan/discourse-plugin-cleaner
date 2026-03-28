@@ -1,0 +1,21 @@
+plugins:
+  plugin_cleaner_orphan_threshold:
+    default: 5
+    type: integer
+    min: 1
+    max: 100
+    client: false
+
+  plugin_cleaner_stale_api_key_days:
+    default: 90
+    type: integer
+    min: 7
+    max: 365
+    client: false
+
+  plugin_cleaner_stale_upload_days:
+    default: 30
+    type: integer
+    min: 1
+    max: 365
+    client: false
