@@ -1,9 +1,6 @@
 en:
   js:
-    admin:
-      plugins:
-        plugin_cleaner: "Plugin Cleaner"
-    plugin_cleaner:
+    discourse_plugin_cleaner:
       title: "Plugin Cleaner Report"
       total_fields: "Total Custom Fields:"
       suspicious: "Suspicious (Orphan) Records:"

@@ -1,9 +1,6 @@
 tr:
   js:
-    admin:
-      plugins:
-        plugin_cleaner: "Eklenti Temizleyici"
-    plugin_cleaner:
+    discourse_plugin_cleaner:
       title: "Eklenti Temizleyici Raporu"
       total_fields: "Toplam Özel Alan:"
       suspicious: "Şüpheli (Yetim) Kayıt Sayısı:"

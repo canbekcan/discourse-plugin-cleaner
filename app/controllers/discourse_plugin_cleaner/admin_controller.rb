@@ -1,15 +1,11 @@
-module PluginCleaner
+module DiscoursePluginCleaner
   class AdminController < ::Admin::AdminController
-    requires_plugin PluginCleaner::PLUGIN_NAME
+    requires_plugin DiscoursePluginCleaner::PLUGIN_NAME
     before_action :ensure_plugin_active
 
-    def index
-      render json: { status: "Plugin Cleaner is active and ready." }
-    end
-
     def scan
-      scan_result = PluginCleaner::Scanner.run
-      report = PluginCleaner::Report.generate(scan_result)
+      scan_result = DiscoursePluginCleaner::Scanner.run
+      report = DiscoursePluginCleaner::Report.generate(scan_result)
       render json: report
     end
 
