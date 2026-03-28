@@ -1,8 +1,0 @@
-tr:
-  js:
-    discourse_plugin_cleaner:
-      title: "Eklenti Temizleyici Raporu"
-      total_fields: "Toplam Özel Alan:"
-      suspicious: "Şüpheli (Yetim) Kayıt Sayısı:"
-      detected: "Tespit Edilenler:"
-      clean: "Sistem tertemiz, yetim kayıt bulunamadı."

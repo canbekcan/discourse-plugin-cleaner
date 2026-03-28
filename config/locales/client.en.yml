@@ -1,8 +1,0 @@
-en:
-  js:
-    discourse_plugin_cleaner:
-      title: "Plugin Cleaner Report"
-      total_fields: "Total Custom Fields:"
-      suspicious: "Suspicious (Orphan) Records:"
-      detected: "Detected:"
-      clean: "System is clean, no orphan records found."

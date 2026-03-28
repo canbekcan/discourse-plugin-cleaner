@@ -1,5 +1,0 @@
-tr:
-  site_settings:
-    discourse_plugin_cleaner_enabled: "Akademik platform için Eklenti Temizleyici taramasını aktif et."
-  discourse_plugin_cleaner:
-    title: "Eklenti Temizleyici"

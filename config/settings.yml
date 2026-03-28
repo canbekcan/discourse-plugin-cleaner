@@ -1,4 +1,0 @@
-plugins:
-  discourse_plugin_cleaner_enabled:
-    default: true
-    client: true
