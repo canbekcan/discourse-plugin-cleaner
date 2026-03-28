@@ -1,6 +1,6 @@
 # name: discourse-plugin-cleaner
 # about: Scans orphan plugin data and custom fields safely
-# version: 0.1
+# version: 0.3
 # authors: canbekcan
 # url: https://github.com/canbekcan/discourse-plugin-cleaner
 

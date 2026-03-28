@@ -1,6 +1,6 @@
 <div class="plugin-cleaner-admin">
   <h2>Plugin Cleaner</h2>
-  <p>Scans your database for orphan custom fields and settings left behind by removed or unused plugins.</p>
+  <p>Deep scan of your database for orphaned plugin data — custom fields, settings, themes, badges, API keys, webhooks, uploads, and more.</p>
 
   <div class="plugin-cleaner-actions">
     <DButton
@@ -13,64 +13,136 @@
   </div>
 
   {{#if this.errorMessage}}
-    <div class="alert alert-error">
-      {{this.errorMessage}}
-    </div>
+    <div class="alert alert-error">{{this.errorMessage}}</div>
   {{/if}}
 
   {{#if this.scanResult}}
     <div class="plugin-cleaner-results">
-      <h3>Scan Results
-        <span class="scan-timestamp">{{this.scanResult.timestamp}}</span>
-      </h3>
 
-      <div class="plugin-cleaner-summary">
-        <div class="stat-box">
-          <span class="stat-number">{{this.scanResult.summary.total_custom_fields}}</span>
-          <span class="stat-label">Total Custom Fields</span>
-        </div>
-        <div class="stat-box {{if this.scanResult.summary.suspicious_fields_count "has-issues"}}">
-          <span class="stat-number">{{this.scanResult.summary.suspicious_fields_count}}</span>
-          <span class="stat-label">Suspicious Fields</span>
-        </div>
+      {{! ── Summary Bar ── }}
+      <div class="plugin-cleaner-summary-bar">
+        <span class="scan-timestamp">Scanned at {{this.scanResult.timestamp}}</span>
+        <span class="total-issues {{if this.scanResult.summary.total_issues "has-issues"}}">
+          {{this.scanResult.summary.total_issues}} total issues found
+        </span>
       </div>
 
-      {{#if this.scanResult.recommendation.length}}
-        <div class="plugin-cleaner-recommendations">
-          <h4>Recommendations</h4>
-          <ul>
-            {{#each this.scanResult.recommendation as |rec|}}
-              <li class="recommendation-item">{{rec}}</li>
-            {{/each}}
-          </ul>
-        </div>
-      {{else}}
-        <div class="alert alert-success">
-          No orphan data detected. Your database looks clean!
-        </div>
-      {{/if}}
+      {{! ── Summary Stats ── }}
+      <div class="plugin-cleaner-summary">
+        {{#each-in this.scanResult.summary as |key value|}}
+          {{#unless (eq key "total_issues")}}
+            <div class="stat-box {{if value "has-issues"}}">
+              <span class="stat-number">{{value}}</span>
+              <span class="stat-label">{{key}}</span>
+            </div>
+          {{/unless}}
+        {{/each-in}}
+      </div>
 
-      {{#if this.scanResult.summary.suspicious_fields}}
-        <div class="plugin-cleaner-fields">
-          <h4>Suspicious Custom Fields (fewer than 5 records)</h4>
+      {{! ── Recommendations ── }}
+      {{#if this.scanResult.recommendations.length}}
+        <div class="plugin-cleaner-section">
+          <h3>Recommendations</h3>
           <table class="d-table">
             <thead>
               <tr>
-                <th>Field Name</th>
-                <th>Record Count</th>
+                <th>Severity</th>
+                <th>Type</th>
+                <th>Issue</th>
               </tr>
             </thead>
             <tbody>
-              {{#each this.scanResult.summary.suspicious_fields as |field|}}
-                <tr>
-                  <td><code>{{field.field}}</code></td>
-                  <td>{{field.count}}</td>
+              {{#each this.scanResult.recommendations as |rec|}}
+                <tr class="severity-{{rec.severity}}">
+                  <td><span class="badge-severity badge-{{rec.severity}}">{{rec.severity}}</span></td>
+                  <td><code>{{rec.type}}</code></td>
+                  <td>{{rec.message}}</td>
+                </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        </div>
+      {{else}}
+        <div class="alert alert-success">No issues detected — your database looks clean!</div>
+      {{/if}}
+
+      {{! ── Custom Fields Detail ── }}
+      {{#if this.scanResult.details.custom_fields.user.length}}
+        <div class="plugin-cleaner-section">
+          <h3>User Custom Fields</h3>
+          <table class="d-table">
+            <thead><tr><th>Field</th><th>Records</th><th>Risk</th></tr></thead>
+            <tbody>
+              {{#each this.scanResult.details.custom_fields.user as |f|}}
+                <tr class="{{if f.orphan "orphan-row"}}">
+                  <td><code>{{f.field}}</code></td>
+                  <td>{{f.count}}</td>
+                  <td><span class="badge-severity badge-{{f.risk}}">{{f.risk}}</span></td>
                 </tr>
               {{/each}}
             </tbody>
           </table>
         </div>
       {{/if}}
+
+      {{! ── API Keys ── }}
+      {{#if this.scanResult.details.api_keys.length}}
+        <div class="plugin-cleaner-section">
+          <h3>API Keys</h3>
+          <table class="d-table">
+            <thead><tr><th>Description</th><th>User</th><th>Last Used</th><th>Status</th></tr></thead>
+            <tbody>
+              {{#each this.scanResult.details.api_keys as |k|}}
+                <tr class="{{if k.stale "orphan-row"}}">
+                  <td>{{k.description}}</td>
+                  <td>{{k.user}}</td>
+                  <td>{{if k.last_used k.last_used "Never"}}</td>
+                  <td>{{if k.stale "⚠️ Stale" "✅ Active"}}</td>
+                </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        </div>
+      {{/if}}
+
+      {{! ── Webhooks ── }}
+      {{#if this.scanResult.details.web_hooks.length}}
+        <div class="plugin-cleaner-section">
+          <h3>Webhooks</h3>
+          <table class="d-table">
+            <thead><tr><th>URL</th><th>Active</th><th>Last Status</th><th>Last Triggered</th></tr></thead>
+            <tbody>
+              {{#each this.scanResult.details.web_hooks as |w|}}
+                <tr class="{{if w.failing "orphan-row"}}">
+                  <td><code>{{w.payload_url}}</code></td>
+                  <td>{{if w.active "✅" "❌"}}</td>
+                  <td>{{if w.last_status w.last_status "—"}}</td>
+                  <td>{{if w.last_triggered w.last_triggered "Never"}}</td>
+                </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        </div>
+      {{/if}}
+
+      {{! ── Uploads ── }}
+      {{#if this.scanResult.details.uploads.total}}
+        <div class="plugin-cleaner-section">
+          <h3>Uploads</h3>
+          <div class="plugin-cleaner-summary">
+            <div class="stat-box">
+              <span class="stat-number">{{this.scanResult.details.uploads.total}}</span>
+              <span class="stat-label">Total Uploads</span>
+            </div>
+            <div class="stat-box {{if this.scanResult.details.uploads.orphaned "has-issues"}}">
+              <span class="stat-number">{{this.scanResult.details.uploads.orphaned}}</span>
+              <span class="stat-label">Orphaned ({{this.scanResult.details.uploads.orphaned_pct}}%)</span>
+            </div>
+          </div>
+        </div>
+      {{/if}}
+
     </div>
   {{/if}}
 </div>
+
