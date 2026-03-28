@@ -1,10 +1,13 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
+import { fn } from "@ember/helper";
+import { on } from "@ember/modifier";
 import { concat } from "@ember/helper";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
-import { i18n } from "discourse-i18n";
+import { i18n } from "discourse-common/helpers/i18n"; // Corrected Import
+import { eq } from "discourse-common/lib/helpers";     // Added Missing Import
 import DButton from "discourse/components/d-button";
 
 // ── Risk badge ────────────────────────────────────────────────────────────────
@@ -56,7 +59,6 @@ export default class AdminPluginsPluginCleaner extends Component {
     this.scanResult    = null;
     this.errorMessage  = null;
     this._selected     = new Set();
-
     try {
       this.scanResult = await ajax("/admin/plugins/plugin-cleaner/scan", { type: "GET" });
     } catch (e) {
@@ -97,20 +99,17 @@ export default class AdminPluginsPluginCleaner extends Component {
         i18n("plugin_cleaner.confirm_delete", { count: this._selected.size })
       )
     ) return;
-
     this.isDeleting = true;
 
     const items = [...this._selected].map((key) => {
       const [type, ...rest] = key.split("::");
       return { type, id: rest.join("::") };
     });
-
     try {
       const result = await ajax("/admin/plugins/plugin-cleaner/delete", {
         type: "DELETE",
         data: { items },
       });
-
       const failed = (result.results || []).filter((r) => !r.success);
       if (failed.length > 0) {
         this.errorMessage = failed.map((f) => `${f.type}::${f.id} — ${f.error}`).join("; ");
@@ -139,13 +138,11 @@ export default class AdminPluginsPluginCleaner extends Component {
   <template>
     <div class="plugin-cleaner-admin">
 
-      {{! Header }}
       <div class="plugin-cleaner-header">
         <h2>{{i18n "plugin_cleaner.title"}}</h2>
         <p>{{i18n "plugin_cleaner.description"}}</p>
       </div>
 
-      {{! Tabs }}
       <div class="plugin-cleaner-tabs">
         <button
           class="pc-tab {{if (eq this.activeTab "scan") "active"}}"
@@ -159,14 +156,10 @@ export default class AdminPluginsPluginCleaner extends Component {
         </button>
       </div>
 
-      {{! Error }}
       {{#if this.errorMessage}}
         <div class="alert alert-error pc-alert">{{this.errorMessage}}</div>
       {{/if}}
 
-      {{! ══════════════════════════════════════════════ }}
-      {{! SCAN TAB                                       }}
-      {{! ══════════════════════════════════════════════ }}
       {{#if (eq this.activeTab "scan")}}
 
         <div class="plugin-cleaner-toolbar">
@@ -198,7 +191,6 @@ export default class AdminPluginsPluginCleaner extends Component {
 
         {{#if this.scanResult}}
 
-          {{! Scan meta }}
           <div class="pc-scan-meta">
             {{i18n "plugin_cleaner.status.scanned_at" time=this.scanResult.scanned_at}}
             &nbsp;·&nbsp;
@@ -207,7 +199,6 @@ export default class AdminPluginsPluginCleaner extends Component {
             </strong>
           </div>
 
-          {{! Summary grid }}
           <div class="pc-summary-grid">
             <StatBox
               @value={{this.scanResult.summary.orphaned_custom_fields}}
@@ -241,7 +232,6 @@ export default class AdminPluginsPluginCleaner extends Component {
             </div>
           {{/unless}}
 
-          {{! ── Custom Fields: User ── }}
           {{#if this.scanResult.custom_fields.user.length}}
             <div class="pc-section">
               <h3>{{i18n "plugin_cleaner.sections.custom_fields"}} — User</h3>
@@ -278,7 +268,6 @@ export default class AdminPluginsPluginCleaner extends Component {
             </div>
           {{/if}}
 
-          {{! ── Custom Fields: Topic ── }}
           {{#if this.scanResult.custom_fields.topic.length}}
             <div class="pc-section">
               <h3>{{i18n "plugin_cleaner.sections.custom_fields"}} — Topic</h3>
@@ -315,7 +304,6 @@ export default class AdminPluginsPluginCleaner extends Component {
             </div>
           {{/if}}
 
-          {{! ── Custom Fields: Post ── }}
           {{#if this.scanResult.custom_fields.post.length}}
             <div class="pc-section">
               <h3>{{i18n "plugin_cleaner.sections.custom_fields"}} — Post</h3>
@@ -352,7 +340,6 @@ export default class AdminPluginsPluginCleaner extends Component {
             </div>
           {{/if}}
 
-          {{! ── Plugin Settings ── }}
           {{#if this.scanResult.plugin_settings.length}}
             <div class="pc-section">
               <h3>{{i18n "plugin_cleaner.sections.plugin_settings"}}</h3>
@@ -379,7 +366,6 @@ export default class AdminPluginsPluginCleaner extends Component {
             </div>
           {{/if}}
 
-          {{! ── Themes ── }}
           {{#if this.scanResult.themes.length}}
             <div class="pc-section">
               <h3>{{i18n "plugin_cleaner.sections.themes"}}</h3>
@@ -414,7 +400,6 @@ export default class AdminPluginsPluginCleaner extends Component {
             </div>
           {{/if}}
 
-          {{! ── API Keys ── }}
           {{#if this.scanResult.api_keys.length}}
             <div class="pc-section">
               <h3>{{i18n "plugin_cleaner.sections.api_keys"}}</h3>
@@ -451,7 +436,6 @@ export default class AdminPluginsPluginCleaner extends Component {
             </div>
           {{/if}}
 
-          {{! ── Badges ── }}
           {{#if this.scanResult.badges.length}}
             <div class="pc-section">
               <h3>{{i18n "plugin_cleaner.sections.badges"}}</h3>
@@ -486,7 +470,6 @@ export default class AdminPluginsPluginCleaner extends Component {
             </div>
           {{/if}}
 
-          {{! ── Tag Groups ── }}
           {{#if this.scanResult.tag_groups.length}}
             <div class="pc-section">
               <h3>{{i18n "plugin_cleaner.sections.tag_groups"}}</h3>
@@ -521,7 +504,6 @@ export default class AdminPluginsPluginCleaner extends Component {
             </div>
           {{/if}}
 
-          {{! ── Webhooks ── }}
           {{#if this.scanResult.web_hooks.length}}
             <div class="pc-section">
               <h3>{{i18n "plugin_cleaner.sections.webhooks"}}</h3>
@@ -548,7 +530,6 @@ export default class AdminPluginsPluginCleaner extends Component {
             </div>
           {{/if}}
 
-          {{! ── Uploads ── }}
           {{#if this.scanResult.uploads.checked}}
             <div class="pc-section">
               <h3>{{i18n "plugin_cleaner.sections.uploads"}}</h3>
@@ -567,13 +548,10 @@ export default class AdminPluginsPluginCleaner extends Component {
             </div>
           {{/if}}
 
-        {{/if}}{{! end scanResult }}
+        {{/if}}
 
-      {{/if}}{{! end scan tab }}
+      {{/if}}
 
-      {{! ══════════════════════════════════════════════ }}
-      {{! VERSIONS TAB                                   }}
-      {{! ══════════════════════════════════════════════ }}
       {{#if (eq this.activeTab "versions")}}
         <div class="pc-section">
           <h3>{{i18n "plugin_cleaner.versions.title"}}</h3>
