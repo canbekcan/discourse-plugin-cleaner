@@ -209,7 +209,7 @@
 
   &--critical { background: var(--danger);        color: #fff; }
   &--high     { background: var(--danger-medium);  color: #fff; }
-  &--medium   { background: var(--highlight);      color: var(--primary); }
+  &--medium   { background: var(--highlight);      color: #000000; }
   &--low      { background: var(--primary-low);    color: var(--primary); }
-  &--none     { background: var(--success-low);    color: var(--success-medium); }
+  &--none     { background: var(--success-low);    color: #ffffff; }
 }
