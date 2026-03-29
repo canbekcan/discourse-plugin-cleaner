@@ -1,7 +1,8 @@
 en:
-  plugin_cleaner:
-    title: "Plugin Cleaner"
-    description: "Scan and clean orphaned plugin data from the database"
+  js:
+    plugin_cleaner:
+      title: "Plugin Cleaner"
+      description: "Scan and clean orphaned plugin data from the database"
 
     nav:
       scan: "Scan"

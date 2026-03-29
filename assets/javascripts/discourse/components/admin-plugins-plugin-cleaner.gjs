@@ -12,6 +12,10 @@ import i18n from "discourse-common/helpers/i18n";
 import { eq } from "truth-helpers";
 import DButton from "discourse/components/d-button";
 
+function isSelected(selectedSet, type, id) {
+  return selectedSet ? selectedSet.has(`${type}::${id}`) : false;
+}
+
 // ── Risk badge ────────────────────────────────────────────────────────────────
 const RiskBadge = <template>
   <span class="pc-badge pc-badge--{{@risk}}">
@@ -78,10 +82,6 @@ export default class AdminPluginsPluginCleaner extends Component {
     const next = new Set(this._selected);
     next.has(key) ? next.delete(key) : next.add(key);
     this._selected = next;
-  }
-
-  isSelected(type, id) {
-    return this._selected.has(`${type}::${id}`);
   }
 
   get selectedCount() {
@@ -254,7 +254,7 @@ export default class AdminPluginsPluginCleaner extends Component {
                         {{#if f.orphan}}
                           <input
                             type="checkbox"
-                            checked={{this.isSelected "user_custom_field" f.field}}
+                            checked={{isSelected this._selected "user_custom_field" f.field}}
                             {{on "change" (fn this.toggleItem "user_custom_field" f.field)}}
                           />
                         {{/if}}

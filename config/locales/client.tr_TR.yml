@@ -1,7 +1,8 @@
 tr_TR:
-  plugin_cleaner:
-    title: "Eklenti Temizleyici"
-    description: "Veritabanındaki kullanılmayan eklenti verilerini tara ve temizle"
+  js:
+    plugin_cleaner:
+      title: "Eklenti Temizleyici"
+      description: "Veritabanındaki kullanılmayan eklenti verilerini tara ve temizle"
 
     nav:
       scan: "Tara"
