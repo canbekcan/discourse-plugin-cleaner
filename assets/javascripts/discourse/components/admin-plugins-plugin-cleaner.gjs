@@ -110,7 +110,8 @@ export default class AdminPluginsPluginCleaner extends Component {
     try {
       const result = await ajax("/admin/plugins/plugin-cleaner/delete", {
         type: "DELETE",
-        data: { items },
+        data: JSON.stringify({ items }), // Force JSON body
+        contentType: "application/json", // Tell Rails to parse as JSON
       });
       const failed = (result.results || []).filter((r) => !r.success);
       if (failed.length > 0) {
