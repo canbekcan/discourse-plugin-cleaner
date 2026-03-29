@@ -6,8 +6,10 @@ import { on } from "@ember/modifier";
 import { concat } from "@ember/helper";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
-import { i18n } from "discourse-common/helpers/i18n"; // Corrected Import
-import { eq } from "discourse-common/lib/helpers";     // Added Missing Import
+
+// ── Corrected Imports for Discourse v2026 / Ember 6.10+ ──
+import i18n from "discourse-common/helpers/i18n";
+import { eq } from "truth-helpers";
 import DButton from "discourse/components/d-button";
 
 // ── Risk badge ────────────────────────────────────────────────────────────────
