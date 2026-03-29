@@ -36,6 +36,20 @@ module PluginCleaner
     private
 
     def self.delete_custom_field(model, field_name)
+      # 1. Enforce Server-Side Validation against Core Fields
+      if model == UserCustomField && PluginCleaner::Scanner::CORE_USER_FIELDS.include?(field_name)
+        return { success: false, error: "Security violation: Cannot delete core user field" }
+      end
+
+      if model == TopicCustomField && PluginCleaner::Scanner::CORE_TOPIC_FIELDS.include?(field_name)
+        return { success: false, error: "Security violation: Cannot delete core topic field" }
+      end
+
+      if model == PostCustomField && PluginCleaner::Scanner::CORE_POST_FIELDS.include?(field_name)
+        return { success: false, error: "Security violation: Cannot delete core post field" }
+      end
+
+      # 2. Execute deletion if safe
       count = model.where(name: field_name).delete_all
       { success: true, deleted_count: count }
     rescue => e
