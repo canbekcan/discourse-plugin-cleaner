@@ -1,9 +1,34 @@
 module PluginCleaner
   class Scanner
     # -------------------------------------------------------------------------
-    # Core Discourse field names — never flagged as orphans
+    # Dynamic Field Registration Lookup
     # -------------------------------------------------------------------------
-    CORE_USER_FIELDS = %w[
+    # Rather than hardcoding, we dynamically fetch fields registered by Discourse 
+    # Core and active plugins to future-proof against Discourse upgrades.
+    def self.dynamically_registered_fields
+      user_fields = DiscoursePluginRegistry.serialized_current_user_fields.to_a +
+                    DiscoursePluginRegistry.custom_user_fields.to_a
+      
+      # Include admin-defined User Profile fields (e.g. user_field_1)
+      if defined?(UserField)
+        user_fields += UserField.pluck(:id).map { |id| "user_field_#{id}" }
+      end
+
+      {
+        user: user_fields.uniq.compact.map(&:to_s),
+        topic: DiscoursePluginRegistry.topic_custom_fields.to_a.map(&:to_s),
+        post: DiscoursePluginRegistry.post_custom_fields.to_a.map(&:to_s),
+        category: DiscoursePluginRegistry.category_custom_fields.to_a.map(&:to_s),
+        group: DiscoursePluginRegistry.group_custom_fields.to_a.map(&:to_s)
+      }
+    end
+
+    # -------------------------------------------------------------------------
+    # Heuristic Fallback (For Core fields that don't formally register)
+    # -------------------------------------------------------------------------
+    # Some legacy core fields bypass the registry. We maintain a minimal baseline,
+    # but rely on the dynamic registry + threshold limits for true safety.
+    BASELINE_USER_FIELDS = %w[
       seen_notification_id last_seen_notification_id
       notification_level_when_replying allowed_pm_users
       muted_usernames ignored_usernames homepage_id
@@ -11,18 +36,21 @@ module PluginCleaner
       sidebar_list_destination dismissed_sidebar_section_highlights_count
     ].freeze
 
-    CORE_TOPIC_FIELDS = %w[featured_link external_id].freeze
-    CORE_POST_FIELDS  = %w[notice action_code_who].freeze
+    BASELINE_TOPIC_FIELDS = %w[featured_link external_id].freeze
+    BASELINE_POST_FIELDS  = %w[notice action_code_who].freeze
 
     # -------------------------------------------------------------------------
     # Main entry point
     # -------------------------------------------------------------------------
     def self.run
       active_plugin_names = Discourse.plugins.map(&:name)
+      
+      # Respect the admin site setting for thresholds
+      threshold = SiteSetting.plugin_cleaner_orphan_threshold rescue 5
 
       results = {
         active_plugins:         active_plugin_names,
-        custom_fields:          safe { scan_custom_fields },
+        custom_fields:          safe { scan_custom_fields(threshold) },
         plugin_settings:        safe { scan_plugin_settings(active_plugin_names) },
         themes:                 safe { scan_themes },
         badges:                 safe { scan_badges },
@@ -44,31 +72,35 @@ module PluginCleaner
     # -------------------------------------------------------------------------
     # Custom Fields — all models
     # -------------------------------------------------------------------------
-    def self.scan_custom_fields
+    def self.scan_custom_fields(threshold)
       {
-        user:     field_counts(UserCustomField,     CORE_USER_FIELDS),
-        topic:    field_counts(TopicCustomField,    CORE_TOPIC_FIELDS),
-        post:     field_counts(PostCustomField,     CORE_POST_FIELDS),
-        category: field_counts(CategoryCustomField, []),
-        group:    (defined?(GroupCustomField) ? field_counts(GroupCustomField, []) : [])
+        user:     field_counts(UserCustomField,     :user,     BASELINE_USER_FIELDS, threshold),
+        topic:    field_counts(TopicCustomField,    :topic,    BASELINE_TOPIC_FIELDS, threshold),
+        post:     field_counts(PostCustomField,     :post,     BASELINE_POST_FIELDS, threshold),
+        category: field_counts(CategoryCustomField, :category, [], threshold),
+        group:    (defined?(GroupCustomField) ? field_counts(GroupCustomField, :group, [], threshold) : [])
       }
     end
 
-    def self.field_counts(model, exclusions)
+    def self.field_counts(model, type, baseline, threshold)
+      registered_fields = dynamically_registered_fields[type] || []
+      safe_list = (registered_fields + baseline).uniq
+
       model.group(:name).count
-        .reject { |name, _| exclusions.include?(name.to_s) }
+        .reject { |name, _| safe_list.include?(name.to_s) }
         .map do |name, count|
+          is_orphan = count < threshold
           {
             id:      "#{model.name.underscore.tr('/', '_')}::#{name}",
             field:   name,
             model:   model.name,
             count:   count,
-            orphan:  count < 5,
-            risk:    risk_level(count),
+            orphan:  is_orphan,
+            risk:    is_orphan ? risk_level(count) : "critical",
             deletable: true
           }
         end
-        .sort_by { |x| x[:count] }
+        .sort_by { |x| [x[:orphan] ? 0 : 1, -x[:count]] }
     rescue => e
       []
     end
@@ -166,10 +198,11 @@ module PluginCleaner
     def self.scan_uploads
       return { checked: false } unless defined?(Upload)
 
+      stale_days = SiteSetting.plugin_cleaner_stale_upload_days rescue 30
       total    = Upload.count
       conn     = ActiveRecord::Base.connection
 
-      q = Upload.where("uploads.created_at < ?", 30.days.ago)
+      q = Upload.where("uploads.created_at < ?", stale_days.days.ago)
       q = q.where(access_control_post_id: nil) if conn.column_exists?(:uploads, :access_control_post_id)
       q = q.where.not(id: PostUpload.select(:upload_id))
 
@@ -224,12 +257,13 @@ module PluginCleaner
     def self.scan_api_keys
       return [] unless defined?(ApiKey)
 
-      cols      = ApiKey.column_names
-      has_last  = cols.include?("last_used_at")
+      stale_days = SiteSetting.plugin_cleaner_stale_api_key_days rescue 90
+      cols       = ApiKey.column_names
+      has_last   = cols.include?("last_used_at")
 
       ApiKey.includes(:api_key_scopes, :user).map do |key|
         last_used = has_last ? key.last_used_at : nil
-        stale     = last_used.nil? || last_used < 90.days.ago
+        stale     = last_used.nil? || last_used < stale_days.days.ago
 
         {
           id:          key.id,
