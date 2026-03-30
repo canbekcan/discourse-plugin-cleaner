@@ -1,7 +1,7 @@
 # name: discourse-plugin-cleaner
 # about: Scans and cleans orphaned plugin data left in the database after plugins are removed
 # version: 1.0.0
-# authors: canbekcan
+# authors: Can Bekcan
 # url: https://github.com/canbekcan/discourse-plugin-cleaner
 # meta_topic_id: ~
 
