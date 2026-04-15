@@ -1,5 +1,5 @@
-import AdminPluginsPluginCleaner from "../../components/admin-plugins-plugin-cleaner";
+import Dashboard from "../../components/cleaner/dashboard";
 
 export default <template>
-  <AdminPluginsPluginCleaner />
+  <Dashboard />
 </template>;

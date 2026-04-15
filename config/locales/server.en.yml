@@ -1,8 +1,5 @@
 en:
-  admin_js:
-    admin:
-      site_settings:
-        categories:
-          plugin_cleaner: "Plugin Cleaner"
+  site_settings:
+    plugin_cleaner_enabled: "Enable the Plugin Cleaner tool for administrators."
   plugin_cleaner:
     title: "Plugin Cleaner"
